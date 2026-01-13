@@ -563,9 +563,23 @@ public class Biblioteca {
             System.out.println(usuarios.get(pos).getNombre() + " tiene " + totalpres + " prestamos");
         }
     }
+    
+    public static int stockLibro(String isbn) throws LibroNoExiste, LibroNoDisponible {
+        int pos = buscaLibro(isbn);
+        if (pos == -1) {
+            throw new LibroNoExiste("No existe en esta biblioteca la referencia: " + isbn);
+        } else if (libros.get(pos).getEjemplares() == 0) {
+            String cadena = "No hay unidades del libro " + libros.get(pos).getTitulo()
+                    + " disponibles actualmente"
+                    + "\nFechas de devolución previstas: ";
+            for (Prestamo p : prestamos) {
+                if (p.getLibroPrest().getIsbn().equals(isbn)) {
+                    cadena = cadena + "\n * " + p.getFechaDev();
+                }
+            }
+            throw new LibroNoDisponible(cadena);
+        }
+        return pos;
+    }
 
 }
-
-
-
-//nuevo prestamo, devolución prestamo, prorrogar prestamo, listado general de prestamos

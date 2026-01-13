@@ -8,6 +8,10 @@ package es.educastur.adrianac86.biblioteca;
  *
  * @author 1dawd11
  */
-public class LibroNoExiste {
+public class LibroNoExiste extends Exception {
+    
+    public LibroNoExiste (String cadena){
+        super(cadena);
+    }
     
 }
