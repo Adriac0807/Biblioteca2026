@@ -4,7 +4,9 @@
 package es.educastur.adrianac86.biblioteca;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Scanner;
 
 /**
@@ -20,48 +22,103 @@ public class Biblioteca {
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        cargaDatos();
-        /*menuPrincipal();*/
-        histUsuario();
+        /*cargaDatos();
+        menuPrincipal();
+        histUsuario();*/
 
-        /*uno();
-        dos();
-        tres();*/
+        cargaDatosPrueba12();
+        //uno();
+        //dos();
+        tres();
+        cuatro();
+        cinco();
     }
 
-    public static void menuPrincipal() {
-
-        int opcion;
-
-        do {
-            System.out.println("\n--MENU PRINCIPAL--");
-            System.out.println("1. Gestion de Libros");
-            System.out.println("2. Gestion de usuarios");
-            System.out.println("3. Gestion de prestamos");
-            System.out.println("4. Listados");
-            System.out.println("9. Salir");
-            opcion = sc.nextInt();
-            sc.nextLine();
-
-            switch (opcion) {
-                case 1:
-                    menuLibros();
-                    break;
-                case 2:
-                    menuUsuarios();
-                    break;
-                case 3:
-                    gestionPrestamos();
-                    break;
-                case 4:
-                    listarColecciones();
-                    break;
+    public static void uno() {
+        System.out.print("\nTeclea el ISBN:");
+        String isbn = sc.next();
+        int pos = buscaLibro(isbn);
+        if (pos == -1) {
+            System.out.println("Ese libro no existe");
+        } else {
+            System.out.println("Prestamos activos del libro " + libros.get(pos).getTitulo() + ": ");
+            for (Prestamo p : prestamos) {
+                if (p.getLibroPrest().getIsbn().equalsIgnoreCase(isbn)) {
+                    System.out.println(libros.get(pos).getTitulo() + "-" + p.getUsuarioPrest());
+                }
             }
-        } while (opcion != 9);
-
+        }
     }
 
-    public static void cargaDatos() {
+    public static void tres() {
+        System.out.println("Usuarios con al menos 1 prestamo ACTIVO:");
+        for (Prestamo p : prestamos) {
+            if (!p.getFechaDev().isBefore(LocalDate.now())) {
+                System.out.println(p.getUsuarioPrest());
+            }
+        }
+    }
+    
+    public static void cuatro() {
+        System.out.println("Usuarios con prestamos fuera de plazo:");
+        for (Prestamo p : prestamos) {
+            if (p.getFechaDev().isBefore(LocalDate.now())) {
+                System.out.println(p.getUsuarioPrest());
+            }
+        }
+    }
+    public static void cinco() {
+        System.out.println("Prestamos realizados en Noviembre:");
+        for (Prestamo p : prestamos) {
+            if (p.getFechaDev().getMonth() == (Month.NOVEMBER)) {
+                System.out.println(p);
+            }
+        }
+    }
+
+    public static void cargaDatosPrueba12() {
+        libros.add(new Libro("1-11", "El Hobbit", "JRR Tolkien", "Aventuras", 3));
+        libros.add(new Libro("1-22", "El Silmarillon", "JRR Tolkien", "Aventuras", 3));
+        libros.add(new Libro("1-33", "El Medico", "N. Gordon", "Aventuras", 4));
+        libros.add(new Libro("1-44", "Chaman", "N. Gordon", "Aventuras", 3));
+        libros.add(new Libro("1-55", "Momo", "M. Ende", "Aventuras", 2));
+        libros.add(new Libro("1-66", "Paraiso inhabitado", "A.M.Matute", "Aventuras", 2));
+        libros.add(new Libro("1-77", "Olvidado Rey Gudu", "A.M.Matute", "Aventuras", 0));
+        libros.add(new Libro("1-88", "El ultimo barco", "D.Villar", "Novela Negra", 3));
+        libros.add(new Libro("1-99", "Ojos de agua", "D.Villar", "Novela Negra", 0));
+
+        usuarios.add(new Usuario("11", "Ana", "ana@email.com", "621111111"));
+        usuarios.add(new Usuario("22", "David", "david@email.com", "622222222"));
+        usuarios.add(new Usuario("33", "Bea", "bea@email.com", "623333333"));
+        usuarios.add(new Usuario("44", "Lucas", "lucas@email.com", "624444444"));
+        usuarios.add(new Usuario("55", "Carlota", "carlota@email.com", "625555555"));
+        usuarios.add(new Usuario("66", "Juan", "juan@email.com", "626666666"));
+
+        LocalDate hoy = LocalDate.now(); //OBTENEMOS LA FECHA DE HOY CON EL MÉTODO now()
+
+        //PRESTAMOS "NORMALES" REALIZADOS HOY Y QUE SE HAN DE DEVOLVER EN 15 DÍAS
+        prestamos.add(new Prestamo(libros.get(0), usuarios.get(0), hoy, hoy.plusDays(15)));
+        prestamos.add(new Prestamo(libros.get(1), usuarios.get(0), hoy, hoy.plusDays(15)));
+        prestamos.add(new Prestamo(libros.get(5), usuarios.get(0), hoy, hoy.plusDays(15)));
+        prestamos.add(new Prestamo(libros.get(0), usuarios.get(4), hoy, hoy.plusDays(15)));
+        prestamos.add(new Prestamo(libros.get(0), usuarios.get(1), hoy, hoy.plusDays(15)));
+        //PRESTAMOS QUE YA TENIAN QUE HABER SIDO DEVUELTOS PORQUE SU FECHA DE DEVOLUCIÓN ES ANTERIOR A HOY
+        prestamos.add(new Prestamo(libros.get(5), usuarios.get(1), hoy.minusDays(17), hoy.minusDays(2)));
+        prestamos.add(new Prestamo(libros.get(1), usuarios.get(4), hoy.minusDays(18), hoy.minusDays(3)));
+        prestamos.add(new Prestamo(libros.get(2), usuarios.get(4), hoy.minusDays(20), hoy.minusDays(5)));
+        prestamos.add(new Prestamo(libros.get(3), usuarios.get(4), hoy.minusDays(20), hoy.minusDays(5)));
+
+        //PRESTAMOS HISTORICOS QUE YA HAN SIDO DEVUELTOS Y POR TANTO ESTÁN EN LA COLECCION prestamosHist
+        prestamosHist.add(new Prestamo(libros.get(0), usuarios.get(0), hoy.minusDays(30), hoy.minusDays(15)));
+        prestamosHist.add(new Prestamo(libros.get(2), usuarios.get(0), hoy.minusDays(30), hoy.minusDays(15)));
+        prestamosHist.add(new Prestamo(libros.get(7), usuarios.get(4), hoy.minusDays(30), hoy.minusDays(15)));
+        prestamosHist.add(new Prestamo(libros.get(5), usuarios.get(4), hoy.minusDays(20), hoy.minusDays(15)));
+        prestamosHist.add(new Prestamo(libros.get(1), usuarios.get(1), hoy.minusDays(20), hoy.minusDays(5)));
+        prestamosHist.add(new Prestamo(libros.get(7), usuarios.get(2), hoy.minusDays(10), hoy));
+        prestamosHist.add(new Prestamo(libros.get(6), usuarios.get(3), hoy.minusDays(10), hoy));
+    }
+
+    /*public static void cargaDatos() {
         libros.add(new Libro("1-11", "El Hobbit", "JRR Tolkien", "Aventuras", 3));
         libros.add(new Libro("1-22", "El Silmarillon", "JRR Tolkien", "Aventuras", 3));
         libros.add(new Libro("1-33", "El Medico", "N. Gordon", "Aventuras", 4));
@@ -100,6 +157,37 @@ public class Biblioteca {
         prestamosHist.add(new Prestamo(libros.get(1), usuarios.get(1), hoy.minusDays(20), hoy.minusDays(5)));
         prestamosHist.add(new Prestamo(libros.get(7), usuarios.get(2), hoy.minusDays(15), hoy));
         prestamosHist.add(new Prestamo(libros.get(6), usuarios.get(3), hoy.minusDays(15), hoy));
+    }*/
+    public static void menuPrincipal() {
+
+        int opcion;
+
+        do {
+            System.out.println("\n--MENU PRINCIPAL--");
+            System.out.println("1. Gestion de Libros");
+            System.out.println("2. Gestion de usuarios");
+            System.out.println("3. Gestion de prestamos");
+            System.out.println("4. Listados");
+            System.out.println("9. Salir");
+            opcion = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcion) {
+                case 1:
+                    menuLibros();
+                    break;
+                case 2:
+                    menuUsuarios();
+                    break;
+                case 3:
+                    gestionPrestamos();
+                    break;
+                case 4:
+                    listarColecciones();
+                    break;
+            }
+        } while (opcion != 9);
+
     }
 
     public static void menuLibros() {
@@ -460,18 +548,24 @@ public class Biblioteca {
                     cuentaActivos++;
                 }
             }
+            System.out.println(usuarios.get(pos).getNombre() + " tiene " + cuentaActivos + " prestamos actualmente.");
 
             System.out.println("Prestamos historicos de: " + usuarios.get(pos).getNombre());
+            int cuentaHist = 0;
             for (Prestamo p : prestamosHist) {
                 if (p.getUsuarioPrest().getDni().equalsIgnoreCase(dni)) {
                     System.out.println(p);
+                    cuentaHist++;
                 }
-
             }
+            System.out.println(usuarios.get(pos).getNombre() + " tiene " + cuentaHist + " prestamos historicamente");
+            int totalpres = cuentaActivos + cuentaHist;
+            System.out.println(usuarios.get(pos).getNombre() + " tiene " + totalpres + " prestamos");
         }
-
     }
+
 }
+
 
 
 //nuevo prestamo, devolución prestamo, prorrogar prestamo, listado general de prestamos
